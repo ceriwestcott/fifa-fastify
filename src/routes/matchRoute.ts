@@ -1,13 +1,10 @@
- import fp from "fastify-plugin";
- import fastifyJwt from "@fastify/jwt";
- import {
-   FastifyInstance,
-   FastifyRequest,
-   FastifyReply,
-   FastifyPluginAsync,
-   FastifyPluginOptions,
- } from "fastify";
+import {
+  FastifyInstance,
+  FastifyPluginAsync,
+  FastifyPluginOptions,
+} from "fastify";
 import { Db } from "../config";
+import fp from "fastify-plugin";
 import {
   MatchAttributes,
   UpdateMatchAttributes,
@@ -17,28 +14,38 @@ import {
 declare module "fastify" {
   export interface FastifyInstance {
     db: Db;
-   authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+    authenticate: (
+      request: FastifyRequest,
+      reply: FastifyReply
+    ) => Promise<void>;
+  }
 }
 
 const MatchRoute: FastifyPluginAsync = async (
   fastify: FastifyInstance,
   options: FastifyPluginOptions
 ) => {
-  fastify.get("/matches", {}, async (request, reply) => {
-    try {
-      const { Match } = fastify.db.models;
-      const matches = await Match.find();
-      return reply.code(200).send(matches);
-    } catch (err) {
-      request.log.error(err);
-      reply.status(500).send({ error: "Internal Server Error" });
+  fastify.get(
+    "/matches",
+    {
+      onRequest: [fastify.authenticate], // Ensure this is correctly referenced
+    },
+    async (request, reply) => {
+      try {
+        const { Match } = fastify.db.models;
+        const matches = await Match.find();
+        return reply.code(200).send(matches);
+      } catch (err) {
+        request.log.error(err);
+        reply.status(500).send({ error: "Internal Server Error" });
+      }
     }
-  });
+  );
 
   fastify.post<{ Body: MatchAttributes }>(
     "/matches",
     {
-      onRequest: [fastify.authenticate],
+      onRequest: [fastify.authenticate], // Ensure this is correctly referenced
     },
     async (request, reply) => {
       try {
@@ -73,7 +80,6 @@ const MatchRoute: FastifyPluginAsync = async (
     }
   );
 
-  //
   fastify.get<{ Params: MatchSearchParams }>(
     "/matches/:id",
     {},
@@ -88,7 +94,6 @@ const MatchRoute: FastifyPluginAsync = async (
       }
     }
   );
-
 };
 
 export default fp(MatchRoute);

@@ -1,29 +1,5 @@
 import { Schema, Document, model, Model } from "mongoose";
-
-export interface MatchAttributes {
-  home: {
-    name: string;
-    team: string;
-  };
-  away: {
-    name: string;
-    team: string;
-  };
-}
-
-export interface UpdateMatchAttributes {
-  id: string;
-  home: {
-    goals: number;
-  };
-  away: {
-    goals: number;
-  };
-}
-
-export interface MatchSearchParams {
-  id: string;
-}
+import { MatchAttributes } from "./params/match-params";
 
 export interface MatchModel extends Model<MatchDocument> {
   addOne(match: MatchAttributes): MatchDocument;

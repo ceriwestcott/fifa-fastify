@@ -3,13 +3,21 @@ import pino from "pino";
 const Port = process.env.PORT || 7000;
 const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/matches";
 import db from "./config";
-import MatchRoute from "./config/routes/matchRoute";
+import AuthRoutes from "./routes/authRoutes";
+import authenticate from "./middleware/authMiddleWare";
+import matchRoute from "./routes/matchRoute";
 const server = fastify({
   logger: pino({ level: "info" }),
 });
 
-server.register(db, { uri });
-server.register(MatchRoute);
+server.register(authenticate);
+// Register middlewared
+// Register database
+server.register(db, { uri: "mongodb://localhost:27017" });
+
+// Register routes
+server.register(AuthRoutes);
+server.register(matchRoute);
 
 const start = async () => {
   try {
