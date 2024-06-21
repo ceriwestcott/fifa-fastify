@@ -2,7 +2,7 @@ require("dotenv").config();
 import { fastify } from "fastify";
 import cors from "@fastify/cors";
 import pino from "pino";
-const PORT = process.env.PORT || 7000;
+const PORT = process.env.PORT || 4210;
 const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/matches";
 import db from "./config";
 import AuthRoutes from "./routes/authRoutes";
