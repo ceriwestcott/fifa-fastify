@@ -14,6 +14,7 @@ const server = fastify({
 
 // Register middlewared
 
+console.log(uri);
 server.register(authenticate);
 // Register database
 server.register(db, { uri: uri });
