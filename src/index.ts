@@ -1,3 +1,4 @@
+require("dotenv").config();
 import { fastify } from "fastify";
 import pino from "pino";
 const PORT = process.env.PORT || 7000;
@@ -8,10 +9,12 @@ import authenticate from "./middleware/authMiddleWare";
 import matchRoute from "./routes/matchRoute";
 const server = fastify({
   logger: pino({ level: "info" }),
+  pluginTimeout: 60000,
 });
 
-server.register(authenticate);
 // Register middlewared
+
+server.register(authenticate);
 // Register database
 server.register(db, { uri: uri });
 
