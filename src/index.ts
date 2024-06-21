@@ -25,7 +25,7 @@ server.register(matchRoute);
 
 const start = async () => {
   try {
-    await server.listen({ port: Number(PORT) });
+    await server.listen({ port: Number(PORT), host: "0.0.0.0" });
     console.log("Server started successfully");
   } catch (err) {
     server.log.error(err);
