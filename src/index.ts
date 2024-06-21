@@ -1,5 +1,6 @@
 require("dotenv").config();
 import { fastify } from "fastify";
+import cors from "@fastify/cors";
 import pino from "pino";
 const PORT = process.env.PORT || 7000;
 const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/matches";
@@ -14,7 +15,9 @@ const server = fastify({
 
 // Register middlewared
 
-console.log(uri);
+server.register(cors, {
+  origin: "*",
+});
 server.register(authenticate);
 // Register database
 server.register(db, { uri: uri });
