@@ -1,6 +1,6 @@
 import { fastify } from "fastify";
 import pino from "pino";
-const Port = process.env.PORT || 7000;
+const PORT = process.env.PORT || 7000;
 const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/matches";
 import db from "./config";
 import AuthRoutes from "./routes/authRoutes";
@@ -13,7 +13,7 @@ const server = fastify({
 server.register(authenticate);
 // Register middlewared
 // Register database
-server.register(db, { uri: "mongodb://localhost:27017" });
+server.register(db, { uri: uri });
 
 // Register routes
 server.register(AuthRoutes);
@@ -21,7 +21,7 @@ server.register(matchRoute);
 
 const start = async () => {
   try {
-    await server.listen({ port: 7000 });
+    await server.listen({ port: Number(PORT) });
     console.log("Server started successfully");
   } catch (err) {
     server.log.error(err);
