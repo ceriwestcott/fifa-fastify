@@ -1,8 +1,4 @@
-import {
-  FastifyPluginAsync,
-  FastifyInstance,
-  FastifyPluginOptions,
-} from "fastify";
+import { FastifyPluginAsync, FastifyInstance } from "fastify";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -15,9 +11,7 @@ interface UserFormAttributes {
 
 const SECRET_KEY = "secret";
 
-const AuthRoutes: FastifyPluginAsync = async (
-  fastify: FastifyInstance,
-) => {
+const AuthRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   fastify.post<{ Body: UserFormAttributes }>(
     "/register",
     {},
@@ -34,7 +28,7 @@ const AuthRoutes: FastifyPluginAsync = async (
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-      const newUser = await fastify.db.models.User.addOne({
+      await fastify.db.models.User.addOne({
         email,
         password: hashedPassword,
       });
