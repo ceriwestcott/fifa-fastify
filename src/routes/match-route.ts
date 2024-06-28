@@ -1,7 +1,4 @@
-import {
-  FastifyInstance,
-  FastifyPluginAsync,
-} from "fastify";
+import { FastifyInstance, FastifyPluginAsync } from "fastify";
 import fp from "fastify-plugin";
 import {
   MatchAttributes,
@@ -10,11 +7,8 @@ import {
 } from "../models/fifa/params/match-params";
 import { sendResponse } from "../service/send-response";
 
-
-const MatchRoute: FastifyPluginAsync = async (
-  fastify: FastifyInstance,
-) => {
-  fastify.get(
+const MatchRoute: FastifyPluginAsync = async (fastify: FastifyInstance) => {
+ fastify.get(
     "/matches",
     {
       onRequest: [fastify.authenticate], // Ensure this is correctly referenced

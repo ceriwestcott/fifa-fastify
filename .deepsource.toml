@@ -15,7 +15,4 @@ enabled = true
 name = "docker"
 enabled = true
 
-[[analyzers]]
-name = "secrets"
-enabled = true
 

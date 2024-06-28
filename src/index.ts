@@ -22,7 +22,7 @@ server.register(cors, {
 });
 server.register(authenticate);
 // Register database
-server.register(db, { uri: uri });
+server.register(db, { uri });
 
 // Register routes
 server.register(AuthRoutes);
@@ -31,7 +31,6 @@ server.register(MatchRoute);
 const start = async () => {
   try {
     await server.listen({ port: Number(PORT), host: "0.0.0.0" });
-    console.log("Server started successfully");
   } catch (err) {
     server.log.error(err);
     process.exit(1);

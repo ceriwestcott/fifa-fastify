@@ -35,7 +35,7 @@ const ConnectDB: FastifyPluginAsync<PluginOptions> = async (
     const models: Models = { Match, User };
     fastify.decorate("db", { models });
   } catch (error) {
-    console.error(error);
+    fastify.log.error(error);
   }
 };
 

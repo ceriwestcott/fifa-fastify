@@ -45,7 +45,7 @@ const AuthRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   }>("/login", {}, async (request, reply) => {
     try {
       const { email, password } = request.body;
-      const user = await fastify.db.models.User.findOne({ email: email });
+      const user = await fastify.db.models.User.findOne({ email });
       if (!user) {
         sendResponse(reply, 400, {
           errorDetails: "User not found",
