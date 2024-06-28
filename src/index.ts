@@ -5,12 +5,13 @@ import pino from "pino";
 const PORT = process.env.PORT || 4210;
 const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/matches";
 import db from "./config";
-import AuthRoutes from "./routes/authRoutes";
+import AuthRoutes from "./routes/auth-route";
 import authenticate from "./middleware/authMiddleWare";
-import matchRoute from "./routes/matchRoute";
+import MatchRoute from "./routes/match-route";
 const server = fastify({
-  logger: pino({ level: "info" }),
-  pluginTimeout: 60000,
+  logger: pino({
+    level: "debug", // main log level, must be lower than the transport level
+  }),
 });
 
 // Register middlewared
@@ -24,7 +25,7 @@ server.register(db, { uri: uri });
 
 // Register routes
 server.register(AuthRoutes);
-server.register(matchRoute);
+server.register(MatchRoute);
 
 const start = async () => {
   try {

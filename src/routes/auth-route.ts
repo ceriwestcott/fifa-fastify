@@ -7,6 +7,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 import fp from "fastify-plugin";
+import { sendResponse } from "../service/send-response";
 interface UserFormAttributes {
   email: string;
   password: string;
@@ -16,7 +17,6 @@ const SECRET_KEY = "secret";
 
 const AuthRoutes: FastifyPluginAsync = async (
   fastify: FastifyInstance,
-  options: FastifyPluginOptions
 ) => {
   fastify.post<{ Body: UserFormAttributes }>(
     "/register",
@@ -26,7 +26,9 @@ const AuthRoutes: FastifyPluginAsync = async (
 
       const existingUser = await fastify.db.models.User.findOne({ email });
       if (existingUser) {
-        return reply.code(400).send({ message: "User already exists" });
+        sendResponse(reply, 400, {
+          errorDetails: "User already exists",
+        });
       }
 
       const saltRounds = 10;
@@ -51,7 +53,9 @@ const AuthRoutes: FastifyPluginAsync = async (
       const { email, password } = request.body;
       const user = await fastify.db.models.User.findOne({ email: email });
       if (!user) {
-        return reply.code(400).send({ message: "User does not exist" });
+        sendResponse(reply, 400, {
+          errorDetails: "User not found",
+        });
       }
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
