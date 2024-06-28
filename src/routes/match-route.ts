@@ -1,31 +1,14 @@
-import {
-  FastifyInstance,
-  FastifyPluginAsync,
-  FastifyPluginOptions,
-} from "fastify";
-import { Db } from "../config";
+import { FastifyInstance, FastifyPluginAsync } from "fastify";
 import fp from "fastify-plugin";
 import {
   MatchAttributes,
   UpdateMatchAttributes,
   MatchSearchParams,
 } from "../models/fifa/params/match-params";
+import { sendResponse } from "../service/send-response";
 
-declare module "fastify" {
-  export interface FastifyInstance {
-    db: Db;
-    authenticate: (
-      request: FastifyRequest,
-      reply: FastifyReply
-    ) => Promise<void>;
-  }
-}
-
-const MatchRoute: FastifyPluginAsync = async (
-  fastify: FastifyInstance,
-  options: FastifyPluginOptions
-) => {
-  fastify.get(
+const MatchRoute: FastifyPluginAsync = async (fastify: FastifyInstance) => {
+ fastify.get(
     "/matches",
     {
       onRequest: [fastify.authenticate], // Ensure this is correctly referenced
@@ -34,16 +17,18 @@ const MatchRoute: FastifyPluginAsync = async (
       try {
         const { Match } = fastify.db.models;
         const matches = await Match.find();
-        return reply.code(200).send(matches);
+        sendResponse(reply, 200, {
+          data: matches,
+        });
       } catch (err) {
         request.log.error(err);
-        reply.status(500).send({ error: "Internal Server Error" });
+        sendResponse(reply, 500, { errorDetails: "Internal Server Error" });
       }
     }
   );
 
   fastify.post<{ Body: MatchAttributes }>(
-    "/matches",
+    "/matches/create",
     {
       onRequest: [fastify.authenticate], // Ensure this is correctly referenced
     },
@@ -54,13 +39,13 @@ const MatchRoute: FastifyPluginAsync = async (
         return reply.code(201).send(match);
       } catch (err) {
         request.log.error(err);
-        reply.status(500).send({ error: "Internal Server Error" });
+        sendResponse(reply, 500, { errorDetails: "Internal Server Error" });
       }
     }
   );
 
-  fastify.post<{ Body: UpdateMatchAttributes }>(
-    "/matches/update",
+  fastify.put<{ Body: UpdateMatchAttributes }>(
+    "/matches/update-score",
     {},
     async (request, reply) => {
       try {
@@ -75,7 +60,33 @@ const MatchRoute: FastifyPluginAsync = async (
         return reply.code(200).send(match);
       } catch (err) {
         request.log.error(err);
-        reply.status(500).send({ error: "Internal Server Error" });
+        sendResponse(reply, 500, { errorDetails: "Internal Server Error" });
+      }
+    }
+  );
+
+  fastify.delete<{ Params: MatchSearchParams }>(
+    "/matches/delete/:id",
+    {
+      onRequest: [fastify.authenticate],
+    },
+    async (request, reply) => {
+      try {
+        if (!request.params.id) {
+          sendResponse(reply, 400, { errorDetails: "Match ID is required" });
+        }
+        const { Match } = fastify.db.models;
+        const match = await Match.findByIdAndDelete(request.params.id);
+        if (!match) {
+          sendResponse(reply, 404, { errorDetails: "Match not found" });
+        } else {
+          sendResponse(reply, 200, {
+            message: "Match deleted successfully",
+          });
+        }
+      } catch (err) {
+        request.log.error(err);
+        sendResponse(reply, 500, { errorDetails: "Internal Delete Error" });
       }
     }
   );
@@ -90,7 +101,7 @@ const MatchRoute: FastifyPluginAsync = async (
         return reply.code(200).send(match);
       } catch (err) {
         request.log.error(err);
-        reply.status(500).send({ error: "Internal Server Error" });
+        sendResponse(reply, 500, { errorDetails: "Internal Server Error" });
       }
     }
   );

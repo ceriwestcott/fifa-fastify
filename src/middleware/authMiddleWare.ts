@@ -1,7 +1,6 @@
 import fp from "fastify-plugin";
 import fastifyJwt from "@fastify/jwt";
 import {
-  FastifyInstance,
   FastifyRequest,
   FastifyReply,
   FastifyPluginAsync,

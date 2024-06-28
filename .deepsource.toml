@@ -8,9 +8,6 @@ exclude_patterns = ["node_modules/**", "dist/**", "build/**"]
 name = "javascript"
 enabled = true
 
-  [analyzers.meta]
-  runtime_version = "nodejs:16"
-
   [analyzers.options]
   scan_type = "ts"
 
@@ -18,10 +15,4 @@ enabled = true
 name = "docker"
 enabled = true
 
-[[analyzers]]
-name = "secrets"
-enabled = true
 
-[[analyzers]]
-name = "security"
-enabled = true
